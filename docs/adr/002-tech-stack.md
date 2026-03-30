@@ -1,7 +1,7 @@
 # ADR-002: Tech Stack — React + Express + PostgreSQL
 
 ## Status
-🟡 Accepted
+ Accepted
 
 ## Context
 
