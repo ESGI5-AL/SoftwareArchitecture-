@@ -1,7 +1,7 @@
 # ADR-002: Tech Stack — React + Express + PostgreSQL
 
 ## Status
-🟡 Proposed
+ Accepted
 
 ## Context
 
@@ -40,3 +40,4 @@ We will use the following stack:
 **Trade-offs**
 - PostgreSQL requires more setup than SQLite but is far better suited for concurrent access and production workloads.
 - Express is unopinionated — we need to establish our own project structure and patterns (controllers/services/repositories), which is documented in ADR-007.
+  
