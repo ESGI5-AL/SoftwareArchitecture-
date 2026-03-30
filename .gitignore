@@ -38,6 +38,7 @@ coverage/
 
 # Frontend
 frontend/.next/
+backend/node_modules/
 frontend/.cache/
 
 # Backend
