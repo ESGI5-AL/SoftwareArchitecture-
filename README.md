@@ -12,42 +12,6 @@ Internal web application for managing company parking reservations. Replaces the
 - **Manager dashboard** — Occupancy rates, no-show analytics, charger usage statistics
 - **Email notifications** — Reservation confirmations via RabbitMQ message queue
 
-## Quick Start
-
-```bash
-# Build all containers
-./scripts/build.sh
-
-# Start the application
-./scripts/run.sh
-
-# Run tests
-./scripts/test.sh
-
-# Seed the database (parking spots + default users)
-./scripts/seed.sh
-
-# Stop and clean up
-./scripts/clean.sh
-```
-
-**Services:**
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:5000 |
-| RabbitMQ Management | http://localhost:15672 (guest/guest) |
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React |
-| Backend | Node.js|
-| Database | PostgreSQL  |
-| Message Queue | RabbitMQ |
-| Containerization | Docker + Docker Compose |
-| Authentication | JWT with role-based access control |
 
 ## Project Structure
 
