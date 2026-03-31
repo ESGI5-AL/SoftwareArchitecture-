@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import testRoutes from './routes/test.routes';
+import reservationRoutes from './routes/reservation.routes';
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.get('/api/health', (_req, res) => {
 
 // Register routes
 app.use('/api', testRoutes);
+app.use('/api/reservations', reservationRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

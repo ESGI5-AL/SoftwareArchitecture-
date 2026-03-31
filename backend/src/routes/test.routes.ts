@@ -10,22 +10,22 @@ const router = Router();
  */
 router.get('/test', async (_req: Request, res: Response) => {
   try {
-    // 1. Query the database to prove the connection works
     const dbResult = await pool.query('SELECT NOW() AS server_time, current_database() AS db_name');
     const { server_time, db_name } = dbResult.rows[0];
 
-    // 2. Count existing seed data to confirm init-db ran
     const usersResult = await pool.query('SELECT COUNT(*)::int AS count FROM users');
-    const parkingLotsResult = await pool.query('SELECT COUNT(*)::int AS count FROM parking_lots');
+    const spotsResult = await pool.query('SELECT COUNT(*)::int AS count FROM parking_spots');
+    const reservationsResult = await pool.query('SELECT COUNT(*)::int AS count FROM reservations');
 
     res.json({
-      message: 'Skeleton flow OK — Frontend ➜ Backend ➜ Database round-trip successful!',
+      message: 'Skeleton flow OK — Frontend → Backend → Database round-trip successful!',
       details: {
         database: db_name,
         serverTime: server_time,
         seedData: {
           users: usersResult.rows[0].count,
-          parkingLots: parkingLotsResult.rows[0].count,
+          parkingSpots: spotsResult.rows[0].count,
+          reservations: reservationsResult.rows[0].count,
         },
       },
     });
