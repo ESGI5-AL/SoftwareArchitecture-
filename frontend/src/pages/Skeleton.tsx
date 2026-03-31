@@ -11,7 +11,7 @@ function SkeletonPage() {
     try {
       // Simulation d'un délai pour l'effet visuel
       await new Promise(resolve => setTimeout(resolve, 800));
-      const res = await fetch("http://localhost:3000/api/test");
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5050/api"}/test`);
       const data = await res.json();
       setResponse({ message: data.message, status: "success" });
     } catch (error) {
