@@ -1,22 +1,88 @@
-.centered {
+body {
+  margin: 0;
+  font-family: "Inter", Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+}
+
+.app {
+  text-align: center;
+}
+
+.header {
+  padding: 30px 20px 10px;
+  font-size: 24px;
+}
+
+.tabs {
+  margin-bottom: 30px;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  border: none;
+  background: #1e293b;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tabs button.active {
+  background: #3b82f6;
+}
+
+.tabs button:hover {
+  opacity: 0.8;
+}
+
+.content {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 60vh;
+  height: 70vh;
+}
+
+.card {
+  background: #1e293b;
+  padding: 40px;
+  border-radius: 20px;
+  width: 350px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 25px;
 }
 
 .main-button {
-  padding: 15px 30px;
-  font-size: 18px;
-  background-color: #007bff;
-  color: white;
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   border: none;
   border-radius: 10px;
+  color: white;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .main-button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(59,130,246,0.4);
+}
+
+.main-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  background: #0f172a;
+  border: 1px solid #334155;
 }
