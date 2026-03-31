@@ -6,17 +6,16 @@ import { FiActivity, FiCalendar, FiMapPin } from "react-icons/fi";
 function App() {
   const location = useLocation();
 
-  // Vérifie si l'onglet est actif pour le style
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      {/* --- NAVBAR --- */}
+      {}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20">
             
-            {/* Logo Section */}
+            {}
             <div className="flex items-center gap-3">
               <div className="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-200">
                 <FiMapPin className="text-white text-xl" />
@@ -26,7 +25,7 @@ function App() {
               </span>
             </div>
 
-            {/* Navigation unifiée (Remplace tes anciennes Tabs) */}
+            {}
             <div className="flex items-center gap-2 sm:gap-4">
               <Link
                 to="/"
@@ -58,7 +57,7 @@ function App() {
         </div>
       </nav>
 
-      {/* --- CONTENU PRINCIPAL --- */}
+      {}
       <main className="flex-grow flex items-center justify-center">
         <div className="max-w-7xl mx-auto w-full py-10 px-4 sm:px-6 lg:px-8 animate-in fade-in zoom-in-95 duration-500">
           <Routes>

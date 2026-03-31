@@ -18,7 +18,7 @@ function ReservationPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [viewDate, setViewDate] = useState(new Date()); // Month currently being viewed
+  const [viewDate, setViewDate] = useState(new Date());
 
   const fetchReservations = async () => {
     try {
@@ -49,7 +49,7 @@ function ReservationPage() {
 
   const handleDateSelect = (date: string) => {
     const d = new Date(date);
-    if (d.getDay() === 0 || d.getDay() === 6) return; // Ignore weekends
+    if (d.getDay() === 0 || d.getDay() === 6) return;
     if (isSlotReserved(date, slot)) return;
 
     setSelectedDates((prev) => {
@@ -97,14 +97,12 @@ function ReservationPage() {
     }
   };
 
-  // --- CALENDAR LOGIC ---
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     
-    // Adjust start offset (Mon=0, Tue=1 ... Sun=6)
     let startOffset = firstDay.getDay() - 1;
     if (startOffset === -1) startOffset = 6; 
 
@@ -152,14 +150,14 @@ function ReservationPage() {
               </div>
             </div>
 
-            {/* Step 2: Calendar Agenda */}
+            {}
             <div className="mb-12 border-b border-slate-50 pb-8">
               <label className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8 block">
                 2. Sélectionner les dates ({selectedDates.length}/5)
               </label>
 
               <div className="max-w-md mx-auto">
-                {/* Month Navigation (Now right on top of the calendar) */}
+                {}
                 <div className="flex items-center justify-center gap-1 bg-slate-50 p-1 rounded-2xl border border-slate-100 mb-6 w-fit mx-auto">
                   <button 
                     onClick={() => changeMonth(-1)} 
@@ -178,7 +176,7 @@ function ReservationPage() {
                   </button>
                 </div>
 
-                {/* Weekday Labels */}
+                {}
                 <div className="grid grid-cols-7 mb-2">
                   {WEEKDAYS.map((w) => (
                     <span key={w} className="text-[10px] font-black text-slate-300 text-center uppercase tracking-tighter">
@@ -187,7 +185,7 @@ function ReservationPage() {
                   ))}
                 </div>
 
-                {/* Days Grid */}
+                {}
                 <div className="grid grid-cols-7 gap-2">
                   {getDaysInMonth(viewDate).map((dateObj, idx) => {
                     if (!dateObj) return <div key={`empty-${idx}`} />;
@@ -222,7 +220,7 @@ function ReservationPage() {
               </div>
             </div>
 
-            {/* Step 3: Map */}
+            {}
             <div className={`mb-12 transition-all duration-500 ${selectedDates.length === 0 ? "opacity-30 pointer-events-none" : ""}`}>
               <div className="flex justify-between mb-8">
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-400 block">
@@ -255,7 +253,7 @@ function ReservationPage() {
                             const isElectric = row === "A" || row === "F";
                             const isSelected = selectedSpot === id;
                             
-                            // Check if this spot is available for ALL selected dates
+
                             const isTaken = reservations.some(r => 
                               r.spotId === id && 
                               r.slot === slot && 
@@ -296,7 +294,7 @@ function ReservationPage() {
               </div>
             </div>
 
-            {/* Submit */}
+            {}
             <div className="pt-8 border-t border-slate-100">
               <button
                 onClick={handleSubmit}

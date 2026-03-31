@@ -9,7 +9,7 @@ function SkeletonPage() {
     setIsTesting(true);
     setResponse(null);
     try {
-      // Simulation d'un délai pour l'effet visuel
+      
       await new Promise(resolve => setTimeout(resolve, 800));
       const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5050/api"}/test`);
       const data = await res.json();
@@ -26,7 +26,7 @@ function SkeletonPage() {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black flex items-center justify-center p-4">
-      {/* Background Decor */}
+      {}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-indigo-500/10 blur-[120px]" />
         <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px]" />
@@ -35,7 +35,7 @@ function SkeletonPage() {
       <div className="max-w-md w-full relative">
         <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-800 overflow-hidden">
           
-          {/* Status Header */}
+          {}
           <div className="p-8 pb-4 text-center">
             <div className="relative inline-flex mb-6">
               <div className={`absolute inset-0 rounded-3xl blur-xl transition-colors duration-500 ${
@@ -57,7 +57,7 @@ function SkeletonPage() {
           </div>
 
           <div className="p-8 pt-4">
-            {/* Action Area */}
+            {}
             <button
               onClick={testBackend}
               disabled={isTesting}
@@ -80,7 +80,7 @@ function SkeletonPage() {
               )}
             </button>
 
-            {/* Response Display */}
+            {}
             <div className={`mt-6 overflow-hidden transition-all duration-500 ease-out ${response ? "max-h-60 opacity-100" : "max-h-0 opacity-0"}`}>
               <div className={`p-5 rounded-2xl border flex flex-col items-center gap-3 ${
                 response?.status === "success" 
@@ -104,7 +104,7 @@ function SkeletonPage() {
             </div>
           </div>
 
-          {/* Footer Info */}
+          {}
           <div className="px-8 py-4 bg-slate-950/50 border-t border-slate-800/50 flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase tracking-widest">
             <span>Protocol: HTTPS/JSON</span>
             <div className="flex gap-2 items-center">
