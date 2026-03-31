@@ -4,120 +4,98 @@ import pool from '../infrastructure/config/database';
 const router = Router();
 
 /**
- * GET /api/reservations/availability
- * Check available spots for a given parking lot, date, and slot (AM/PM).
- *
- * Query params:
- *   - parkingLotId (UUID)
- *   - date (YYYY-MM-DD)
- *   - slot (AM | PM)
+ * GET /api/reservations
+ * Returns active reservations mapped to frontend format: { date, slot, spotId }
  */
-router.get('/availability', async (req: Request, res: Response) => {
-  const { parkingLotId, date, slot } = req.query;
-
-  if (!parkingLotId || !date || !slot) {
-    res.status(400).json({
-      error: 'Paramètres manquants: parkingLotId, date, slot (AM ou PM) sont requis',
-    });
-    return;
-  }
-
-  if (slot !== 'AM' && slot !== 'PM') {
-    res.status(400).json({ error: 'Le créneau doit être AM ou PM' });
-    return;
-  }
-
+router.get('/', async (_req: Request, res: Response) => {
   try {
-    // 1. Get parking lot info
-    const lotResult = await pool.query(
-      'SELECT id, name, total_spots FROM parking_lots WHERE id = $1',
-      [parkingLotId]
+    const result = await pool.query(
+      `SELECT reservation_date AS date, slot, spot_id AS "spotId"
+       FROM reservations
+       WHERE status = 'active'
+       ORDER BY reservation_date, slot`
     );
 
-    if (lotResult.rows.length === 0) {
-      res.status(404).json({ error: 'Parking non trouvé' });
-      return;
-    }
+    const reservations: { date: string; slot: string; spotId: string }[] = [];
+    
+    // Track pairs for 'day' logic
+    const dayMap: Record<string, Record<string, { am: boolean; pm: boolean }>> = {};
 
-    const lot = lotResult.rows[0];
+    result.rows.forEach((r: any) => {
+      const dateStr = r.date.toISOString().split('T')[0];
+      const spotId = r.spotId;
+      if (!dayMap[dateStr]) dayMap[dateStr] = {};
+      if (!dayMap[dateStr][spotId]) dayMap[dateStr][spotId] = { am: false, pm: false };
 
-    // 2. Get occupied spots for this lot/date/slot
-    const occupiedResult = await pool.query(
-      `SELECT spot_number FROM reservations
-       WHERE parking_lot_id = $1
-         AND reservation_date = $2
-         AND slot = $3
-         AND status = 'active'
-       ORDER BY spot_number`,
-      [parkingLotId, date, slot]
-    );
-
-    const occupiedSpots = occupiedResult.rows.map((r: any) => r.spot_number);
-    const totalSpots = lot.total_spots;
-    const availableCount = totalSpots - occupiedSpots.length;
-
-    // 3. Build list of available spot numbers
-    const availableSpots: number[] = [];
-    for (let i = 1; i <= totalSpots; i++) {
-      if (!occupiedSpots.includes(i)) {
-        availableSpots.push(i);
+      if (r.slot === 'AM') {
+        reservations.push({ date: dateStr, slot: 'morning', spotId });
+        dayMap[dateStr][spotId].am = true;
+      } else if (r.slot === 'PM') {
+        reservations.push({ date: dateStr, slot: 'afternoon', spotId });
+        dayMap[dateStr][spotId].pm = true;
       }
-    }
-
-    res.json({
-      parking: lot.name,
-      date,
-      slot,
-      totalSpots,
-      occupiedCount: occupiedSpots.length,
-      availableCount,
-      occupiedSpots,
-      availableSpots,
     });
+
+    // If a spot is taken for either AM or PM, mark it as taken for 'day' too
+    Object.keys(dayMap).forEach(dateStr => {
+      Object.keys(dayMap[dateStr]).forEach(spotId => {
+        if (dayMap[dateStr][spotId].am || dayMap[dateStr][spotId].pm) {
+          reservations.push({ date: dateStr, slot: 'day', spotId });
+        }
+      });
+    });
+
+    res.json(reservations);
   } catch (error: any) {
-    console.error('Availability check error:', error);
+    console.error('GET /reservations error:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
 /**
- * GET /api/reservations
- * List all reservations (optionally filtered by date).
- *
- * Query params:
- *   - date (optional, YYYY-MM-DD)
+ * POST /api/reservations
+ * Body: { date: "YYYY-MM-DD", slot: "morning" | "afternoon" | "day", spotId: string }
  */
-router.get('/', async (req: Request, res: Response) => {
-  const { date } = req.query;
+router.post('/', async (req: Request, res: Response) => {
+  const { date, slot, spotId } = req.body;
+
+  if (!date || !slot || !spotId) {
+    res.status(400).json({ error: 'date, slot et spotId sont requis' });
+    return;
+  }
 
   try {
-    let query = `
-      SELECT r.id, r.spot_number, r.slot, r.reservation_date, r.status,
-             u.email AS user_email,
-             p.name AS parking_name
-      FROM reservations r
-      JOIN users u ON r.user_id = u.id
-      JOIN parking_lots p ON r.parking_lot_id = p.id
-    `;
-    const params: any[] = [];
+    const userRes = await pool.query("SELECT id FROM users WHERE email = 'user@test.com' LIMIT 1");
+    const userId = userRes.rows[0].id;
 
-    if (date) {
-      query += ' WHERE r.reservation_date = $1';
-      params.push(date);
+    const requiredSlots = slot === 'day' ? ['AM', 'PM'] : [slot === 'morning' ? 'AM' : 'PM'];
+
+    // CHECK AVAILABILITY for the specific spot
+    const existing = await pool.query(
+      `SELECT id FROM reservations
+       WHERE spot_id = $1 AND reservation_date = $2 AND slot = ANY($3) AND status = 'active'`,
+      [spotId, date, requiredSlots]
+    );
+
+    if (existing && existing.rowCount && existing.rowCount > 0) {
+      res.status(409).json({ error: `La place ${spotId} est déjà occupée pour ce créneau` });
+      return;
     }
 
-    query += ' ORDER BY r.reservation_date, r.slot, r.spot_number';
+    for (const s of requiredSlots) {
+      await pool.query(
+        `INSERT INTO reservations (user_id, spot_id, slot, reservation_date, status)
+         VALUES ($1, $2, $3, $4, 'active')`,
+        [userId, spotId, s, date]
+      );
+    }
 
-    const result = await pool.query(query, params);
-
-    res.json({
-      count: result.rows.length,
-      reservations: result.rows,
-    });
+    res.status(201).json({ message: 'Réservation réussie', spot: spotId });
   } catch (error: any) {
-    console.error('List reservations error:', error);
+    console.error('POST /reservations error:', error);
     res.status(500).json({ error: error.message });
   }
 });
+
 
 export default router;
