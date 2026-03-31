@@ -1,68 +1,78 @@
-import { useState } from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import SkeletonPage from "./pages/Skeleton";
 import ReservationPage from "./pages/Reservation";
-import "./App.css";
+import { FiActivity, FiCalendar, FiMapPin } from "react-icons/fi";
 
 function App() {
   const location = useLocation();
 
-  // Fonction pour vérifier si le lien est actif
+  // Vérifie si l'onglet est actif pour le style
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      {/* En-tête principal */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <h1 className="text-2xl font-black text-indigo-600 tracking-tight">
-            PARKING<span className="text-slate-800">SYSTEM</span>
-          </h1>
-
-          {/* Navigation unifiée via React Router */}
-          <nav className="flex bg-slate-100 p-1 rounded-xl">
-            <Link
-              to="/"
-              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                isActive("/") 
-                ? "bg-white text-indigo-600 shadow-sm" 
-                : "text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              Status & Test
-            </Link>
-            <Link
-              to="/reservation"
-              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                isActive("/reservation") 
-                ? "bg-white text-indigo-600 shadow-sm" 
-                : "text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              Réservations
-            </Link>
-          </nav>
-        </div>
-      </header>
-
-      {/* Contenu principal dynamique */}
-      <main className="flex-grow max-w-7xl mx-auto w-full py-8 px-4 sm:px-6 lg:px-8">
-        <div className="transition-all duration-300">
-          <Routes>
-            {/* Route par défaut (Page de test) */}
-            <Route path="/" element={<SkeletonPage />} />
+      {/* --- NAVBAR --- */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-20">
             
-            {/* Route vers la page de réservation */}
+            {/* Logo Section */}
+            <div className="flex items-center gap-3">
+              <div className="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-200">
+                <FiMapPin className="text-white text-xl" />
+              </div>
+              <span className="text-xl font-black text-slate-800 tracking-tight">
+                Park<span className="text-indigo-600">Ease</span>
+              </span>
+            </div>
+
+            {/* Navigation unifiée (Remplace tes anciennes Tabs) */}
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link
+                to="/"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+                  isActive("/")
+                    ? "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100 shadow-sm"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                }`}
+              >
+                <FiActivity className={isActive("/") ? "animate-pulse" : ""} />
+                <span className="hidden sm:inline">Status Système</span>
+                <span className="sm:hidden">Status</span>
+              </Link>
+              
+              <Link
+                to="/reservation"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+                  isActive("/reservation")
+                    ? "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100 shadow-sm"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                }`}
+              >
+                <FiCalendar />
+                <span>Réservations</span>
+              </Link>
+            </div>
+
+          </div>
+        </div>
+      </nav>
+
+      {/* --- CONTENU PRINCIPAL --- */}
+      <main className="flex-grow flex items-center justify-center">
+        <div className="max-w-7xl mx-auto w-full py-10 px-4 sm:px-6 lg:px-8 animate-in fade-in zoom-in-95 duration-500">
+          <Routes>
+            <Route path="/" element={<SkeletonPage />} />
             <Route path="/reservation" element={<ReservationPage />} />
           </Routes>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-6">
+      {/* --- FOOTER --- */}
+      <footer className="py-8 border-t border-slate-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-slate-400 text-sm font-medium">
-            &copy; 2026 Parking Reservation System • Tous droits réservés
+          <p className="text-slate-400 text-sm font-medium tracking-wide">
+            &copy; 2026 <span className="text-slate-600 font-bold">PARKEASE</span> • Système de Réservation Intelligent
           </p>
         </div>
       </footer>
