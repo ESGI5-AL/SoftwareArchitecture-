@@ -9,11 +9,11 @@ function SkeletonPage() {
     setIsTesting(true);
     setResponse(null);
     try {
-      
+
       await new Promise(resolve => setTimeout(resolve, 800));
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5050/api"}/test`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5050/api"}/health`);
       const data = await res.json();
-      setResponse({ message: data.message, status: "success" });
+      setResponse({ message: data.status, status: "success" });
     } catch (error) {
       setResponse({
         message: "Le serveur distant ne répond pas. Vérifiez votre configuration réseau.",
@@ -34,7 +34,7 @@ function SkeletonPage() {
 
       <div className="max-w-md w-full relative">
         <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-800 overflow-hidden">
-          
+
           {}
           <div className="p-8 pb-4 text-center">
             <div className="relative inline-flex mb-6">
@@ -47,7 +47,7 @@ function SkeletonPage() {
                 }`} />
               </div>
             </div>
-            
+
             <h1 className="text-2xl font-black text-white tracking-tight mb-2">
               Status du Système
             </h1>
@@ -83,8 +83,8 @@ function SkeletonPage() {
             {}
             <div className={`mt-6 overflow-hidden transition-all duration-500 ease-out ${response ? "max-h-60 opacity-100" : "max-h-0 opacity-0"}`}>
               <div className={`p-5 rounded-2xl border flex flex-col items-center gap-3 ${
-                response?.status === "success" 
-                  ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400" 
+                response?.status === "success"
+                  ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400"
                   : "bg-rose-500/5 border-rose-500/20 text-rose-400"
               }`}>
                 {response?.status === "success" ? (
