@@ -1,4 +1,5 @@
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { WEEKDAYS } from "../constants";
 
 interface Props {
@@ -11,35 +12,39 @@ interface Props {
 
 export function Calendar({ selectedDates, viewDate, getDaysInMonth, changeMonth, onDateSelect }: Props) {
   return (
-    <div className="mb-12 border-b border-slate-50 pb-8">
-      <label className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8 block">
+    <div className="mb-12 border-b border-border pb-8">
+      <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-8 block">
         2. Sélectionner les dates ({selectedDates.length}/5)
       </label>
 
       <div className="max-w-md mx-auto">
-        <div className="flex items-center justify-center gap-1 bg-slate-50 p-1 rounded-2xl border border-slate-100 mb-6 w-fit mx-auto">
-          <button
+        <div className="flex items-center justify-center gap-1 bg-secondary p-1 rounded-2xl border border-border mb-6 w-fit mx-auto">
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => changeMonth(-1)}
-            className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-indigo-600 transition-all active:scale-95"
+            className="rounded-xl text-muted-foreground hover:text-primary hover:bg-card active:scale-95"
           >
-            <FiChevronLeft size={20} />
-          </button>
-          <span className="text-sm font-black text-indigo-950 px-4 min-w-[140px] text-center capitalize">
+            <ChevronLeft size={20} />
+          </Button>
+          <span className="text-sm font-black text-foreground px-4 min-w-[140px] text-center capitalize">
             {viewDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
           </span>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => changeMonth(1)}
-            className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-indigo-600 transition-all active:scale-95"
+            className="rounded-xl text-muted-foreground hover:text-primary hover:bg-card active:scale-95"
           >
-            <FiChevronRight size={20} />
-          </button>
+            <ChevronRight size={20} />
+          </Button>
         </div>
 
         <div className="grid grid-cols-7 mb-2">
           {WEEKDAYS.map((w) => (
             <span
               key={w}
-              className="text-[10px] font-black text-slate-300 text-center uppercase tracking-tighter"
+              className="text-[10px] font-black text-muted-foreground/50 text-center uppercase tracking-tighter"
             >
               {w}
             </span>
@@ -63,17 +68,17 @@ export function Calendar({ selectedDates, viewDate, getDaysInMonth, changeMonth,
                 disabled={isWeekend || isPast}
                 className={`relative aspect-square flex items-center justify-center rounded-xl text-sm font-bold transition-all duration-300 border-2 ${
                   isSelected
-                    ? "bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100"
+                    ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/10"
                     : isWeekend || isPast
-                    ? "bg-slate-50 border-transparent text-slate-200 cursor-not-allowed"
+                    ? "bg-muted border-transparent text-muted-foreground/30 cursor-not-allowed"
                     : isToday
-                    ? "bg-white border-indigo-200 text-indigo-600 ring-4 ring-indigo-50/50"
-                    : "bg-white border-slate-50 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50/30"
+                    ? "bg-card border-primary/30 text-primary ring-4 ring-primary/10"
+                    : "bg-card border-border text-foreground hover:border-primary/30 hover:bg-accent/30"
                 }`}
               >
                 {dateObj.getDate()}
                 {isToday && !isSelected && (
-                  <div className="absolute bottom-1 w-1 h-1 bg-indigo-600 rounded-full" />
+                  <div className="absolute bottom-1 w-1 h-1 bg-primary rounded-full" />
                 )}
               </button>
             );

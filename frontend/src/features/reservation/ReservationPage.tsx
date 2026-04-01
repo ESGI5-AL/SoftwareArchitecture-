@@ -5,6 +5,8 @@ import { SlotSelector } from "./components/SlotSelector";
 import { Calendar } from "./components/Calendar";
 import { ParkingGrid } from "./components/ParkingGrid";
 import { StatusMessage } from "./components/StatusMessage";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 function ReservationPage() {
   const {
@@ -24,16 +26,16 @@ function ReservationPage() {
   const { viewDate, getDaysInMonth, changeMonth } = useCalendar();
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4">
+    <div className="min-h-screen bg-transparent py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white shadow-2xl shadow-indigo-100 rounded-[2rem] overflow-hidden border border-slate-100">
-          <div className="bg-indigo-600 p-8 text-white">
+        <Card className="shadow-2xl shadow-primary/10 rounded-4xl overflow-hidden border-border">
+          <div className="bg-primary p-8 text-primary-foreground rounded-t-4xl">
             <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
-              <FiCalendar className="text-indigo-200" /> Réserver mon parking
+              <FiCalendar className="text-primary-foreground/60" /> Réserver mon parking
             </h1>
           </div>
 
-          <div className="p-8 text-left">
+          <CardContent className="p-8 text-left">
             <SlotSelector slot={slot} onChange={changeSlot} />
 
             <Calendar
@@ -53,24 +55,21 @@ function ReservationPage() {
               onSpotSelect={handleSpotSelect}
             />
 
-            <div className="pt-8 border-t border-slate-100">
-              <button
+            <div className="pt-8 border-t border-border">
+              <Button
                 onClick={handleSubmit}
                 disabled={selectedDates.length === 0 || isSubmitting || !selectedSpot}
-                className={`w-full py-5 rounded-[1.25rem] text-lg font-black transition-all ${
-                  selectedDates.length === 0 || isSubmitting || !selectedSpot
-                    ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                    : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-xl shadow-indigo-100 active:scale-95"
-                }`}
+                size="lg"
+                className="w-full py-5 rounded-[1.25rem] text-lg font-black active:scale-95"
               >
                 {isSubmitting
                   ? "Traitement..."
                   : `Réserver${selectedSpot ? ` la place ${selectedSpot}` : ""} (${selectedDates.length} jour${selectedDates.length > 1 ? "s" : ""})`}
-              </button>
+              </Button>
               <StatusMessage message={message} />
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

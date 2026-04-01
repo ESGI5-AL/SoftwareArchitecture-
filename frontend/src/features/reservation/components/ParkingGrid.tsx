@@ -20,22 +20,22 @@ export function ParkingGrid({ selectedSpot, selectedDates, slot, spots, reservat
       }`}
     >
       <div className="flex justify-between mb-8">
-        <label className="text-xs font-bold uppercase tracking-widest text-slate-400 block">
+        <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground block">
           3. Choisir votre place disponible
         </label>
         <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider">
           <div className="flex items-center gap-1.5 text-amber-500">
             <FiZap /> Electrique
           </div>
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <div className="w-2 h-2 rounded bg-indigo-600"></div> Sélectionnée
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <div className="w-2 h-2 rounded bg-primary"></div> Sélectionnée
           </div>
         </div>
       </div>
 
       <div className="flex flex-col items-center space-y-8">
-        <div className="w-full flex items-center justify-start gap-3 text-slate-300 font-black text-xs mb-2 pl-4">
-          <div className="bg-slate-200 p-1.5 rounded-lg text-white">↓</div>
+        <div className="w-full flex items-center justify-start gap-3 text-muted-foreground/50 font-black text-xs mb-2 pl-4">
+          <div className="bg-muted p-1.5 rounded-lg text-muted-foreground">↓</div>
           <span>ENTRÉE</span>
         </div>
 
@@ -43,7 +43,7 @@ export function ParkingGrid({ selectedSpot, selectedDates, slot, spots, reservat
           {ROWS.map((row) => (
             <div key={row} className="flex flex-col gap-2">
               <div className="flex items-center gap-2 sm:gap-4">
-                <span className="w-4 sm:w-6 text-[10px] sm:text-sm font-black text-slate-300 text-center">
+                <span className="w-4 sm:w-6 text-[10px] sm:text-sm font-black text-muted-foreground/40 text-center">
                   {row}
                 </span>
                 <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5 sm:gap-2">
@@ -68,17 +68,17 @@ export function ParkingGrid({ selectedSpot, selectedDates, slot, spots, reservat
                         disabled={isTaken}
                         className={`group relative h-9 w-9 sm:h-12 sm:w-12 flex items-center justify-center rounded-lg sm:rounded-xl border-2 transition-all duration-300 active:scale-90 ${
                           isSelected
-                            ? "bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-200"
+                            ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/20"
                             : isTaken
-                            ? "bg-slate-100 border-slate-100 text-slate-300 cursor-not-allowed opacity-50"
-                            : "bg-white border-slate-100 text-slate-400 hover:border-indigo-200 hover:bg-indigo-50/30"
+                            ? "bg-muted border-muted text-muted-foreground/40 cursor-not-allowed opacity-50"
+                            : "bg-card border-border text-muted-foreground hover:border-primary/30 hover:bg-accent/30"
                         }`}
                       >
                         <span className="text-[9px] sm:text-[10px] font-bold tracking-tighter">{id}</span>
                         {isElectric && (
                           <FiZap
                             className={`absolute top-0.5 right-0.5 text-[7px] sm:text-[8px] ${
-                              isSelected ? "text-indigo-200" : isTaken ? "text-slate-200" : "text-amber-400"
+                              isSelected ? "text-primary-foreground/60" : isTaken ? "text-muted-foreground/30" : "text-amber-400"
                             }`}
                           />
                         )}
@@ -86,7 +86,7 @@ export function ParkingGrid({ selectedSpot, selectedDates, slot, spots, reservat
                     );
                   })}
                 </div>
-                <span className="w-4 sm:w-6 text-[10px] sm:text-sm font-black text-slate-300 text-center">
+                <span className="w-4 sm:w-6 text-[10px] sm:text-sm font-black text-muted-foreground/40 text-center">
                   {row}
                 </span>
               </div>
@@ -94,9 +94,9 @@ export function ParkingGrid({ selectedSpot, selectedDates, slot, spots, reservat
           ))}
         </div>
 
-        <div className="w-full flex items-center justify-end gap-3 text-slate-300 font-black text-xs mt-2 pr-4">
+        <div className="w-full flex items-center justify-end gap-3 text-muted-foreground/50 font-black text-xs mt-2 pr-4">
           <span>SORTIE</span>
-          <div className="bg-slate-200 p-1.5 rounded-lg text-white">↓</div>
+          <div className="bg-muted p-1.5 rounded-lg text-muted-foreground">↓</div>
         </div>
       </div>
     </div>
