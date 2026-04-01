@@ -3,8 +3,19 @@ import { FiCalendar, FiCheckCircle, FiAlertCircle, FiZap, FiChevronLeft, FiChevr
 
 type Reservation = {
   date: string;
-  slot: "morning" | "afternoon" | "day";
-  spotId: string;
+  slot: "AM" | "PM" | "FULL";
+  spotId: string; // UUID from backend
+};
+
+type ParkingSpot = {
+  id: string;
+  spotNumber: string;
+};
+
+const SLOT_TO_API: Record<"morning" | "afternoon" | "day", "AM" | "PM" | "FULL"> = {
+  morning: "AM",
+  afternoon: "PM",
+  day: "FULL",
 };
 
 const ROWS = ["A", "B", "C", "D", "E", "F"];
@@ -16,13 +27,16 @@ function ReservationPage() {
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [slot, setSlot] = useState<"morning" | "afternoon" | "day">("day");
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [spots, setSpots] = useState<ParkingSpot[]>([]);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [viewDate, setViewDate] = useState(new Date());
 
+  const API = import.meta.env.VITE_API_URL || "http://localhost:5050/api";
+
   const fetchReservations = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5050/api"}/reservations`);
+      const res = await fetch(`${API}/reservations`);
       const data = await res.json();
       setReservations(data);
     } catch (error) {
@@ -31,12 +45,20 @@ function ReservationPage() {
   };
 
   useEffect(() => {
+    fetch(`${API}/parking-spots/all`)
+      .then((r) => r.json())
+      .then((data: ParkingSpot[]) => setSpots(data))
+      .catch((err) => console.error("Erreur chargement places :", err));
     fetchReservations();
   }, []);
 
-  const isSlotReserved = (date: string, slot: Reservation["slot"]): boolean => {
+  const isSlotReserved = (date: string, uiSlot: "morning" | "afternoon" | "day"): boolean => {
     if (!selectedSpot) return false;
-    return reservations.some((r) => r.date === date && r.slot === slot && r.spotId === selectedSpot);
+    const spotUuid = spots.find((s) => s.spotNumber === selectedSpot)?.id;
+    if (!spotUuid) return false;
+    return reservations.some(
+      (r) => r.date === date && r.slot === SLOT_TO_API[uiSlot] && r.spotId === spotUuid
+    );
   };
 
   const handleSpotSelect = (id: string) => {
@@ -69,14 +91,20 @@ function ReservationPage() {
       return;
     }
 
+    const spotUuid = spots.find((s) => s.spotNumber === selectedSpot)?.id;
+    if (!spotUuid) {
+      setMessage({ text: "Place introuvable, veuillez réessayer.", type: "error" });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const responses = await Promise.all(
         selectedDates.map((date) =>
-          fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5050/api"}/reservations`, {
+          fetch(`${API}/reservations`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ date, slot, spotId: selectedSpot }),
+            body: JSON.stringify({ date, slot: SLOT_TO_API[slot], spotId: spotUuid }),
           })
         )
       );
@@ -254,9 +282,10 @@ function ReservationPage() {
                             const isSelected = selectedSpot === id;
                             
 
-                            const isTaken = reservations.some(r => 
-                              r.spotId === id && 
-                              r.slot === slot && 
+                            const spotUuid = spots.find((s) => s.spotNumber === id)?.id;
+                            const isTaken = !!spotUuid && reservations.some(r =>
+                              r.spotId === spotUuid &&
+                              r.slot === SLOT_TO_API[slot] &&
                               selectedDates.includes(r.date)
                             );
 

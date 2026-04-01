@@ -81,7 +81,7 @@ async function start() {
 
     // 7. Routes (Aggregators)
     app.use('/api/auth', authRoutes(loginHandler));
-    app.use('/api/parking-spots', parkingRoutes(getAvailabilityHandler));
+    app.use('/api/parking-spots', parkingRoutes(getAvailabilityHandler, parkingSpotRepository));
     app.use('/api/reservations', reservationRoutes(
       createReservationHandler,
       getMyReservationsHandler,
