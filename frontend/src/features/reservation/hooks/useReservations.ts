@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../../shared/api/client";
+import { getApiError } from "../../../shared/api/getApiError";
 import type { Reservation, ParkingSpot } from "../types";
 import { SLOT_TO_API } from "../constants";
 import { useAuth } from "../../auth/hooks/useAuth";
@@ -99,8 +100,8 @@ export function useReservations() {
       fetchMyReservations();
       setSelectedDates([]);
       setSelectedSpot(null);
-    } catch {
-      setMessage({ text: "Erreur de connexion.", type: "error" });
+    } catch (error) {
+      setMessage({ text: getApiError(error), type: "error" });
     } finally {
       setIsSubmitting(false);
       setTimeout(() => setMessage(null), 5000);
@@ -113,8 +114,8 @@ export function useReservations() {
       setMessage({ text: "Check-in effectué !", type: "success" });
       fetchMyReservations();
       setTimeout(() => setMessage(null), 4000);
-    } catch {
-      setMessage({ text: "Erreur lors du check-in.", type: "error" });
+    } catch (error) {
+      setMessage({ text: getApiError(error), type: "error" });
     }
   };
 
