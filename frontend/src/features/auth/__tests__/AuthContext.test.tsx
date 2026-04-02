@@ -4,8 +4,6 @@ import userEvent from '@testing-library/user-event';
 import { AuthProvider, AuthContext } from '../AuthContext';
 import { useContext } from 'react';
 
-// ─── Mock authService ─────────────────────────────────────────────────────────
-
 vi.mock('../authService', () => ({
   loginRequest: vi.fn(),
 }));
@@ -13,14 +11,11 @@ vi.mock('../authService', () => ({
 import { loginRequest } from '../authService';
 const mockLoginRequest = loginRequest as ReturnType<typeof vi.fn>;
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
 const mockLoginResponse = {
   token: 'jwt-token-123',
   user: { id: 'u1', name: 'Alice', email: 'alice@example.com', role: 'employee' as const },
 };
 
-/** Composant consommateur pour exposer le contexte dans les tests */
 function TestConsumer() {
   const ctx = useContext(AuthContext);
   if (!ctx) return <div>no context</div>;
@@ -42,8 +37,6 @@ const renderWithProvider = () =>
       <TestConsumer />
     </AuthProvider>
   );
-
-// ─── Tests ───────────────────────────────────────────────────────────────────
 
 describe('AuthProvider / AuthContext', () => {
   beforeEach(() => {
@@ -109,13 +102,11 @@ describe('AuthProvider / AuthContext', () => {
       mockLoginRequest.mockResolvedValue(mockLoginResponse);
       renderWithProvider();
 
-      // Login d'abord
       await user.click(screen.getByRole('button', { name: /login/i }));
       await waitFor(() =>
         expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated')
       );
 
-      // Puis logout
       await user.click(screen.getByRole('button', { name: /logout/i }));
 
       expect(localStorage.getItem('token')).toBeNull();

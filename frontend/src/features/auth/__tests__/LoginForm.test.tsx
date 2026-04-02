@@ -3,8 +3,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LoginForm from '../components/LoginForm';
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
 const renderForm = (overrides: {
   onSubmit?: (email: string, password: string) => Promise<void>;
   isLoading?: boolean;
@@ -19,8 +17,6 @@ const renderForm = (overrides: {
   render(<LoginForm {...props} />);
   return props;
 };
-
-// ─── Tests ───────────────────────────────────────────────────────────────────
 
 describe('LoginForm', () => {
   describe('Rendu', () => {
