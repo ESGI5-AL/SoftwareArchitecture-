@@ -13,21 +13,50 @@ export class CreateReservationService implements CreateReservationUseCase {
   ) {}
 
   async create(dto: CreateReservationRequestDTO): Promise<Reservation> {
-    const { userId, spotId, date, slot } = dto;
+    const { userId, userRole, spotId, date, slot } = dto;
 
-    // 1. Check spot exists and is active
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const reservationDate = new Date(date);
+    reservationDate.setHours(0, 0, 0, 0);
+
+    if (reservationDate < today) {
+      throw new Error('Cannot reserve a date in the past');
+    }
+
+    let maxDate: Date;
+    if (userRole === 'manager') {
+      // Managers can book up to 30 calendar days from today
+      maxDate = new Date(today);
+      maxDate.setDate(today.getDate() + 30);
+    } else {
+      // Employees can book within the current and following calendar week (Mon–Fri)
+      const dayOfWeek = today.getDay();
+      const daysToThisMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      const thisWeekMonday = new Date(today);
+      thisWeekMonday.setDate(today.getDate() - daysToThisMonday);
+      maxDate = new Date(thisWeekMonday);
+      maxDate.setDate(thisWeekMonday.getDate() + 11);
+    }
+
+    if (reservationDate > maxDate) {
+      const label = userRole === 'manager' ? '30-day' : 'current and following calendar week';
+      throw new Error(`Reservation date exceeds the allowed booking window (${label})`);
+    }
+
+    // Check if spot exists and is active
     const spot = await this.parkingSpotRepository.findById(spotId);
     if (!spot || !spot.isActive) {
       throw new Error(`Parking spot ${spotId} is not available`);
     }
 
-    // 2. Check for conflicts
+    // Check for conflicts
     const existing = await this.reservationRepository.findBySpotAndDateSlot(spotId, date, slot);
     if (existing) {
       throw new Error(`Spot ${spotId} is already reserved for this time`);
     }
 
-    // 3. Save reservation
+    // Save reservation
     const reservation = await this.reservationRepository.save({
       userId,
       spotId,
@@ -36,7 +65,7 @@ export class CreateReservationService implements CreateReservationUseCase {
       status: 'pending'
     });
 
-    // 4. Publish event (fire-and-forget)
+    // Publish event
     try {
       await this.messagePublisher.publish('reservation.created', {
         reservationId: reservation.id,
