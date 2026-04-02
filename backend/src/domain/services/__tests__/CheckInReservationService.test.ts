@@ -2,8 +2,6 @@ import { CheckInReservationService } from '../CheckInReservationService';
 import { ReservationRepository } from '../../ports/out/ReservationRepository';
 import { Reservation } from '../../models/Reservation';
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
 const TODAY = new Date().toISOString().split('T')[0];
 
 const makeReservation = (overrides: Partial<Reservation> = {}): Reservation => ({
@@ -28,8 +26,6 @@ const makeRepo = (reservation: Reservation | null = makeReservation()): Reservat
   findAll: jest.fn(),
   getRawStats: jest.fn(),
 });
-
-// ─── Tests ───────────────────────────────────────────────────────────────────
 
 describe('CheckInReservationService', () => {
   describe('Réservation introuvable', () => {

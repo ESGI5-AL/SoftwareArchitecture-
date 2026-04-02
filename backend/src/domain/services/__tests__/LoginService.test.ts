@@ -4,15 +4,11 @@ import { LoginService } from '../LoginService';
 import { UserRepository } from '../../ports/out/UserRepository';
 import { User } from '../../models/User';
 
-// ─── Mocks ───────────────────────────────────────────────────────────────────
-
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
 
 const mockBcryptCompare = bcrypt.compare as jest.Mock;
 const mockJwtSign = jwt.sign as jest.Mock;
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const JWT_SECRET = 'test-secret';
 
@@ -33,8 +29,6 @@ const makeRepo = (user: User | null = makeUser()): UserRepository => ({
   findByEmail: jest.fn().mockResolvedValue(user),
   findById: jest.fn().mockResolvedValue(user),
 });
-
-// ─── Tests ───────────────────────────────────────────────────────────────────
 
 describe('LoginService', () => {
   beforeEach(() => jest.clearAllMocks());

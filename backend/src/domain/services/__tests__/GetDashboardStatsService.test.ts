@@ -1,8 +1,6 @@
 import { GetDashboardStatsService } from '../GetDashboardStatsService';
 import { ReservationRepository } from '../../ports/out/ReservationRepository';
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
 interface RawStats {
   todayCount: number;
   avgDaily: number;
@@ -23,8 +21,6 @@ const makeRepo = (raw: RawStats): ReservationRepository => ({
   updateStatus: jest.fn(),
 });
 
-// ─── Tests ───────────────────────────────────────────────────────────────────
-
 describe('GetDashboardStatsService', () => {
   const TOTAL_SPOTS = 60;
   const EV_SPOTS = 20;
@@ -35,7 +31,7 @@ describe('GetDashboardStatsService', () => {
         makeRepo({ todayCount: 30, avgDaily: 0, noShowCount: 0, totalPast: 0, evCount: 0, totalCount: 0, activeUsers: 0 })
       );
       const stats = await service.getStats();
-      expect(stats.occupancyToday).toBe(50); // 30/60 = 50%
+      expect(stats.occupancyToday).toBe(50);
     });
 
     it('arrondit correctement un pourcentage non entier', async () => {
@@ -53,7 +49,7 @@ describe('GetDashboardStatsService', () => {
         makeRepo({ todayCount: 0, avgDaily: 45, noShowCount: 0, totalPast: 0, evCount: 0, totalCount: 0, activeUsers: 0 })
       );
       const stats = await service.getStats();
-      expect(stats.avgOccupancyLast30Days).toBe(75); // 45/60 = 75%
+      expect(stats.avgOccupancyLast30Days).toBe(75);
     });
   });
 
@@ -63,7 +59,7 @@ describe('GetDashboardStatsService', () => {
         makeRepo({ todayCount: 0, avgDaily: 0, noShowCount: 6, totalPast: 20, evCount: 0, totalCount: 0, activeUsers: 0 })
       );
       const stats = await service.getStats();
-      expect(stats.noShowRate).toBe(30); // 6/20 = 30%
+      expect(stats.noShowRate).toBe(30);
     });
 
     it('retourne 0 si totalPast est 0 (évite la division par zéro)', async () => {
@@ -81,7 +77,7 @@ describe('GetDashboardStatsService', () => {
         makeRepo({ todayCount: 0, avgDaily: 0, noShowCount: 0, totalPast: 0, evCount: 4, totalCount: 10, activeUsers: 0 })
       );
       const stats = await service.getStats();
-      expect(stats.evChargerUsageRate).toBe(40); // 4/10 = 40%
+      expect(stats.evChargerUsageRate).toBe(40);
     });
 
     it('retourne 0 si totalCount est 0 (évite la division par zéro)', async () => {
