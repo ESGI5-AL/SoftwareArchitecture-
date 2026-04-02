@@ -17,6 +17,7 @@ export class CreateReservationHandler {
       const validated = createSchema.parse(req.body);
       const reservation = await this.createUseCase.create({
         userId: req.user!.userId,
+        userRole: req.user!.role,
         spotId: validated.spotId,
         date: validated.date,
         slot: validated.slot
