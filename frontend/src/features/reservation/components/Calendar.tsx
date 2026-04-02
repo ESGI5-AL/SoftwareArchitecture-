@@ -55,11 +55,14 @@ export function Calendar({ selectedDates, viewDate, getDaysInMonth, changeMonth,
           {getDaysInMonth(viewDate).map((dateObj, idx) => {
             if (!dateObj) return <div key={`empty-${idx}`} />;
 
-            const dateStr = dateObj.toISOString().split("T")[0];
+            const pad = (n: number) => String(n).padStart(2, "0");
+            const dateStr = `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(dateObj.getDate())}`;
+            const today = new Date();
+            const todayStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
             const isSelected = selectedDates.includes(dateStr);
             const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
             const isPast = dateObj < new Date(new Date().setHours(0, 0, 0, 0));
-            const isToday = dateStr === new Date().toISOString().split("T")[0];
+            const isToday = dateStr === todayStr;
 
             return (
               <button
