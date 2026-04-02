@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { FiActivity, FiCalendar, FiMapPin, FiLogOut, FiUser } from "react-icons/fi";
+import { FiBarChart2, FiCalendar, FiClock, FiMapPin, FiLogOut, FiUser } from "react-icons/fi";
 import { useAuth } from "../../features/auth/hooks/useAuth";
 
 export function Navbar() {
@@ -7,6 +7,7 @@ export function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
+  const isManagerOrSecretary = user?.role === "manager" || user?.role === "secretary";
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
@@ -24,19 +25,6 @@ export function Navbar() {
 
           <div className="flex items-center gap-2 sm:gap-4">
             <Link
-              to="/"
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
-                isActive("/")
-                  ? "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100 shadow-sm"
-                  : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-              }`}
-            >
-              <FiActivity className={isActive("/") ? "animate-pulse" : ""} />
-              <span className="hidden sm:inline">Status Système</span>
-              <span className="sm:hidden">Status</span>
-            </Link>
-
-            <Link
               to="/reservation"
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
                 isActive("/reservation")
@@ -47,6 +35,32 @@ export function Navbar() {
               <FiCalendar />
               <span>Réservations</span>
             </Link>
+
+            <Link
+              to="/history"
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+                isActive("/history")
+                  ? "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100 shadow-sm"
+                  : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+              }`}
+            >
+              <FiClock />
+              <span className="hidden sm:inline">Historique</span>
+            </Link>
+
+            {isManagerOrSecretary && (
+              <Link
+                to="/dashboard"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+                  isActive("/dashboard")
+                    ? "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100 shadow-sm"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                }`}
+              >
+                <FiBarChart2 />
+                <span className="hidden sm:inline">Dashboard</span>
+              </Link>
+            )}
 
             {isAuthenticated && user && (
               <>
