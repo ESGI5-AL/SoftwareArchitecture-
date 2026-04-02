@@ -1,7 +1,19 @@
 #!/bin/bash
 set -e
 
-echo "=== ParkManager — Start ==="
+# Parse flags
+BUILD=false
+CLEAN=false
+
+for arg in "$@"; do
+  case $arg in
+    --build) BUILD=true ;;
+    --clean) CLEAN=true ;;
+    *) ;;
+  esac
+done
+
+echo "=== ParkManager — Start (Optimized) ==="
 
 cd "$(dirname "$0")/.."
 
@@ -22,40 +34,52 @@ else
 fi
 
 # 3. Stop old containers
-echo "[3/4] Stopping old containers..."
-docker compose -f docker/docker-compose.yml down -v 2>/dev/null || true
+DOWN_OPTS=""
+if [ "$CLEAN" = true ]; then
+  DOWN_OPTS="-v"
+  echo "[3/4] Stopping containers and clearing volumes..."
+else
+  echo "[3/4] Stopping old containers..."
+fi
+docker compose -f docker/docker-compose.yml down $DOWN_OPTS 2>/dev/null || true
 
 # 4. Build and start
-echo "[4/4] Building and starting all services..."
-docker compose -f docker/docker-compose.yml up --build -d
+UP_OPTS="-d"
+if [ "$BUILD" = true ]; then
+  UP_OPTS="--build -d"
+  echo "[4/4] Building and starting all services..."
+else
+  echo "[4/4] Starting all services..."
+fi
+docker compose -f docker/docker-compose.yml up $UP_OPTS
 
 echo ""
 echo "=== Waiting for services ==="
 
 echo -n "Database..."
 until docker exec parking-db pg_isready -U parking -d parking_db > /dev/null 2>&1; do
-  sleep 1; echo -n "."
+  sleep 0.5; echo -n "."
 done
 echo " ready!"
 
 echo -n "Backend..."
-for i in $(seq 1 30); do
+for i in $(seq 1 60); do
   if curl -s http://localhost:5050/api/health > /dev/null 2>&1; then
     echo " ready!"; break
   fi
-  sleep 1; echo -n "."
-  if [ $i -eq 30 ]; then
+  sleep 0.5; echo -n "."
+  if [ $i -eq 60 ]; then
     echo " FAILED"; docker compose -f docker/docker-compose.yml logs backend --tail 20; exit 1
   fi
 done
 
 echo -n "Frontend..."
-for i in $(seq 1 20); do
+for i in $(seq 1 40); do
   if curl -s http://localhost:3000 > /dev/null 2>&1; then
     echo " ready!"; break
   fi
-  sleep 1; echo -n "."
-  if [ $i -eq 20 ]; then
+  sleep 0.5; echo -n "."
+  if [ $i -eq 40 ]; then
     echo " FAILED"; docker compose -f docker/docker-compose.yml logs frontend --tail 20; exit 1
   fi
 done
@@ -68,3 +92,4 @@ echo "  RabbitMQ:  http://localhost:15672  (parking / parking123)"
 echo "  Database:  localhost:5432  (parking / parking123)"
 echo ""
 echo "Logs: docker compose -f docker/docker-compose.yml logs -f"
+echo "Tips: Use --build to rebuild images, --clean to reset database."
