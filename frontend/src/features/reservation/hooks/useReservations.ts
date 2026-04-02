@@ -2,14 +2,19 @@ import { useEffect, useState } from "react";
 import api from "../../../shared/api/client";
 import type { Reservation, ParkingSpot } from "../types";
 import { SLOT_TO_API } from "../constants";
+import { useAuth } from "../../auth/hooks/useAuth";
 
 export type SlotType = "morning" | "afternoon" | "day";
 
 export function useReservations() {
+  const { user } = useAuth();
+  const maxDays = user?.role === "manager" ? 30 : 5;
+
   const [selectedSpot, setSelectedSpot] = useState<string | null>(null);
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [slot, setSlot] = useState<SlotType>("day");
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [myReservations, setMyReservations] = useState<Reservation[]>([]);
   const [spots, setSpots] = useState<ParkingSpot[]>([]);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,12 +28,22 @@ export function useReservations() {
     }
   };
 
+  const fetchMyReservations = async () => {
+    try {
+      const { data } = await api.get<Reservation[]>("/reservations/my");
+      setMyReservations(data);
+    } catch (error) {
+      console.error("Erreur chargement mes réservations :", error);
+    }
+  };
+
   useEffect(() => {
     api
       .get<ParkingSpot[]>("/parking-spots/all")
       .then(({ data }) => setSpots(data))
       .catch((err) => console.error("Erreur chargement places :", err));
     fetchReservations();
+    fetchMyReservations();
   }, []);
 
   const isSlotReserved = (date: string, uiSlot: SlotType): boolean => {
@@ -51,8 +66,8 @@ export function useReservations() {
 
     setSelectedDates((prev) => {
       if (prev.includes(date)) return prev.filter((d) => d !== date);
-      if (prev.length >= 5) {
-        setMessage({ text: "Max 5 jours par réservation.", type: "error" });
+      if (prev.length >= maxDays) {
+        setMessage({ text: `Max ${maxDays} jours par réservation.`, type: "error" });
         setTimeout(() => setMessage(null), 3000);
         return prev;
       }
@@ -81,13 +96,25 @@ export function useReservations() {
       );
       setMessage({ text: "Réservations effectuées !", type: "success" });
       fetchReservations();
+      fetchMyReservations();
       setSelectedDates([]);
       setSelectedSpot(null);
     } catch {
-      setMessage({ text: " Erreur de connexion.", type: "error" });
+      setMessage({ text: "Erreur de connexion.", type: "error" });
     } finally {
       setIsSubmitting(false);
       setTimeout(() => setMessage(null), 5000);
+    }
+  };
+
+  const handleCheckIn = async (reservationId: string) => {
+    try {
+      await api.patch(`/reservations/${reservationId}/check-in`);
+      setMessage({ text: "Check-in effectué !", type: "success" });
+      fetchMyReservations();
+      setTimeout(() => setMessage(null), 4000);
+    } catch {
+      setMessage({ text: "Erreur lors du check-in.", type: "error" });
     }
   };
 
@@ -102,13 +129,16 @@ export function useReservations() {
     selectedDates,
     slot,
     reservations,
+    myReservations,
     spots,
     message,
     isSubmitting,
+    maxDays,
     isSlotReserved,
     handleSpotSelect,
     handleDateSelect,
     handleSubmit,
+    handleCheckIn,
     changeSlot,
   };
 }

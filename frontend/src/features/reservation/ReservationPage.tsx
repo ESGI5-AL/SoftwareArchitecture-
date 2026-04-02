@@ -5,6 +5,7 @@ import { SlotSelector } from "./components/SlotSelector";
 import { Calendar } from "./components/Calendar";
 import { ParkingGrid } from "./components/ParkingGrid";
 import { StatusMessage } from "./components/StatusMessage";
+import { MyReservations } from "./components/MyReservations";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -14,12 +15,14 @@ function ReservationPage() {
     selectedDates,
     slot,
     reservations,
+    myReservations,
     spots,
     message,
     isSubmitting,
     handleSpotSelect,
     handleDateSelect,
     handleSubmit,
+    handleCheckIn,
     changeSlot,
   } = useReservations();
 
@@ -68,6 +71,8 @@ function ReservationPage() {
               </Button>
               <StatusMessage message={message} />
             </div>
+
+            <MyReservations reservations={myReservations} onCheckIn={handleCheckIn} />
           </CardContent>
         </Card>
       </div>
