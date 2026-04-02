@@ -1,7 +1,12 @@
 import { Pool } from 'pg';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://parking:parking123@localhost:5432/parking_db',
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/parking_db'
 });
+
+export const query = (text: string, params?: any[]) => pool.query(text, params);
 
 export default pool;
