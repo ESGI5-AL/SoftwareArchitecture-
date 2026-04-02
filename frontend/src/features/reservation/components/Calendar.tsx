@@ -27,7 +27,7 @@ export function Calendar({ selectedDates, viewDate, getDaysInMonth, changeMonth,
           >
             <ChevronLeft size={20} />
           </Button>
-          <span className="text-sm font-black text-foreground px-4 min-w-[140px] text-center capitalize">
+          <span className="text-sm font-black text-foreground px-4 min-w-35 text-center capitalize">
             {viewDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
           </span>
           <Button
